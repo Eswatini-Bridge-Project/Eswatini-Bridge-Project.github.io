@@ -36,9 +36,14 @@ function loginUserIn() {
     var email = document.getElementById("loginemail").value;
     var password = document.getElementById("loginpassword").value;
 
-    var users = getInfo("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/users?api_key=keynre40bTqHjQ7AD");
+    //var users = getInfo("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/users?api_key=keynre40bTqHjQ7AD");
     
-    var counter = 0;
+  fetch("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/users?api_key=keynre40bTqHjQ7AD")
+    .then(reposResponse => {
+      return reposResponse.json();
+    })
+    .then(users => {
+      var counter = 0;
 
     users.records.map(user => {
 
@@ -61,6 +66,12 @@ function loginUserIn() {
     }
     
     toggleLoader();
+    })
+    .catch(err => {
+      console.log(err);
+    });
+    
+    
 }
 
 function getInfo(theUrl) {
@@ -76,6 +87,8 @@ function getInfo(theUrl) {
 
 function setUpHomePage() {
     document.getElementById("titleHeader").innerHTML += localStorage.name;
+    
+    document.getElementById("date").value = "2014-01-02T11:42";
 
     localStorage.userLoggedIn = true;
     localStorage.contactsToBeUpdated = "";
@@ -83,33 +96,44 @@ function setUpHomePage() {
     var lists = [];
 
     //load contacts
-    var contacts = getInfo("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD");
+   /* var contacts = getInfo("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD");
+    console.log("contacts are:",contacts);*/
+    
+    fetch("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD")
+        .then(reposResponse => {
+          return reposResponse.json();
+        })
+        .then(contacts => {
+            
+          console.log(contacts);
+        contacts.records.map(contact => {
 
-    contacts.records.map(contact => {
+            var name = contact.fields.Name;
+            var number = contact.fields.Number;
+            var list = contact.fields.List.split(",");
 
+            var parentDiv = document.getElementById("allContacts");
 
-        var name = contact.fields.Name;
-        var number = contact.fields.Number;
-        var list = contact.fields.List.split(",");
+            createContactCard(name, number, list, parentDiv);
 
-        var parentDiv = document.getElementById("allContacts");
+            list.map(item => {
+                if (!lists.includes(item)) {
+                    lists.push(item);
+                }
+            })
 
-        createContactCard(name, number, list, parentDiv);
-
-        list.map(item => {
-            if (!lists.includes(item)) {
-                lists.push(item);
-            }
         })
 
-    })
-    
-    localStorage.lists = lists;
-    
-    lists.map(list =>{
-        var parentDiv = document.getElementById("subList");
-        createListCard(list,parentDiv);
-    })
+        localStorage.lists = lists;
+
+        lists.map(list =>{
+            var parentDiv = document.getElementById("subList");
+            createListCard(list,parentDiv);
+        })
+        })
+        .catch(err => {
+          console.log(err);
+        });
 
 }
 
@@ -192,7 +216,7 @@ function send(number, message) {
     /*form.append("MediaUrl", "https://images.unsplash.com/photo-1545093149-618ce3bcf49d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80");*/
 
     var settings = {
-        "async": false,
+        "async": true,
         "crossDomain": true,
         "url": "https://api.twilio.com/2010-04-01/Accounts/ACd39a50f2581980a42fa759d2a587253b/Messages.json",
         "method": "POST",
@@ -325,32 +349,43 @@ function displayCreateList() {
     //add CREATE Button
 
     //load contacts
-    var contacts = getInfo("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD");
+    //var contacts = getInfo("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD");
+    
+    const userName = 'patarkf';
+      const url = 'https://api.github.com/users';
 
-    contacts.records.map(contact => {
-        console.log(contact.fields);
+      fetch("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD")
+        .then(reposResponse => {
+          return reposResponse.json();
+        })
+        .then(contacts => {
+          console.log(contacts);
+          contacts.records.map(contact => {
+                console.log(contact.fields);
 
-        var name = contact.fields.Name;
-        var number = contact.fields.Number;
-        var list = contact.fields.List;
+                var name = contact.fields.Name;
+                var number = contact.fields.Number;
+                var list = contact.fields.List;
 
-        var divNode = document.createElement("DIV");
-        var pNode = document.createElement("P");
-        var inputNode = document.createElement("INPUT");
-        var textnode = document.createTextNode(`${name} (${number})`);
+                var divNode = document.createElement("DIV");
+                var pNode = document.createElement("P");
+                var inputNode = document.createElement("INPUT");
+                var textnode = document.createTextNode(`${name} (${number})`);
 
-        inputNode.setAttribute("type", "checkbox");
-        inputNode.setAttribute("onclick", "updateNewList(this)");
-        pNode.appendChild(inputNode);
-        pNode.appendChild(textnode);
-        divNode.setAttribute("class","text-center");
+                inputNode.setAttribute("type", "checkbox");
+                inputNode.setAttribute("onclick", "updateNewList(this)");
+                pNode.appendChild(inputNode);
+                pNode.appendChild(textnode);
+                divNode.setAttribute("class","text-center");
 
-        divNode.appendChild(pNode);
+                divNode.appendChild(pNode);
 
-        holder.appendChild(divNode);
-    })
-
-
+                holder.appendChild(divNode);
+            })
+        })
+        .catch(err => {
+          console.log(err);
+        });
 }
 
 function createList() {
