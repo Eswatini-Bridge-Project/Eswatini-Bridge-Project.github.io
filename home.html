@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="index.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
     
+     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
     
 </head>
 
@@ -14,61 +16,80 @@
     <div class="loader" id="loader" style="display: none"></div>
     <h1 id="titleHeader">Welcome to the your WAM page, </h1>
     <p>Share this link to add a new contact: <a href="http://bit.ly/wam-form">http://bit.ly/wam-form</a></p>
-
-    <br>
     
-    <div class="grid-container" >
+    <!-- This snippet uses Font Awesome 5 Free as a dependency. You can download it at fontawesome.io! -->
 
-        <div class="grid-item">
-            <form>
+    <section class="pricing py-5">
+      <div class="container">
+        <div class="row">
+            <!-- Contacts Tier -->
+          <div class="col-lg-3">
+            <div class="card mb-5 mb-lg-0">
+              <div class="card-body">
+                <h5 class="card-title text-muted text-uppercase text-center">Who</h5>
+                      
+                    <a href="javascript:displayCreateList();" class="btn btn-block btn-primary">create subscription list</a>
+                      
 
-                <br>
+                
+                <hr>
+                   <div id="addToList" style="display: none">
+                        <button onclick="createList()">Create list!</button>
+                    </div>
+              </div>
+            </div>
+          </div>
+          <!-- Contacts Tier -->
+          <div class="col-lg-3">
+            <div class="card mb-5 mb-lg-0">
+              <div class="card-body">
+                <h5 class="card-title text-muted text-uppercase text-center">Who</h5>
+                  <div  id="subList">
 
-                <p>Contacts added:</p>
+                    <h1 class="card-title text-uppercase text-center">Subscription Lists</h1>
 
-                <ol id="contactHolder">
+                </div>
+                  <h1 class="card-title text-uppercase text-center">contacts</h1>
+                <hr>
+                  <div id="allContacts">
+                    </div>
+              </div>
+            </div>
+          </div>
+          <!-- Message Tier -->
+          <div class="col-lg-3">
+            <div class="card mb-5 mb-lg-0">
+              <div class="card-body">
+                <h5 class="card-title text-muted text-uppercase text-center">What</h5>
+                  <textarea id="sendMessageText" placeholder="Input your message here!😊" style="width: 100%" rows="4"></textarea>
+                <hr>
+                  <p>Contacts added:</p>
+
+                <ol id="contactHolder" lass="fa-ol">
                 </ol>
-
-                <br>
-
-                <textarea id="sendMessageText" placeholder="Input your message here!😊" style="width: 100%" rows="4"></textarea>
-
-                <br>
-
-            </form>
-
-            <button onclick="sendMessage()" class="homeButtons">SEND NOW!</button> <br> <br>
-
-            <input type="datetime-local" id="date">
+                  
+              </div>
+            </div>
+          </div>
+          <!-- Schedule Tier -->
+          <div class="col-lg-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title text-muted text-uppercase text-center">when</h5>
+                <a href="javascript:sendMessage();" class="btn btn-block btn-primary text-uppercase">send now</a>
+                <hr>
+                  <input type="datetime-local" id="date" style="width: 100%">
             
             <br><br>
 
-            <button onclick="addToSchedule()" class="homeButtons">Schedule for later!</button>
-            
+            <a href="javascript:addToSchedule();" class="btn btn-block btn-primary text-uppercase">Schedule for later</a>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <div id="contactSection" class="grid-item">
-
-            <div id="addToList" style="display: none;border: 1px solid; height: 50vh; width: 50vw">
-                <button onclick="createList()">Create list!</button>
-            </div>
-
-            <div id="subList">
-
-                <button onclick="displayCreateList()">Create a list</button>
-
-                <h1>Subscription Lists</h1>
-
-            </div>
-
-            <h1>Contacts</h1>
-
-            <div id="allContacts">
-            </div>
-
-        </div>
-        
-    </div>
 
 
 </body>

@@ -280,6 +280,8 @@ function checker(item) {
     if (item.checked) {
         var node = document.createElement("LI");
         var textnode = document.createTextNode(name);
+        
+        node.setAttribute("class", "fa-li");
 
         node.appendChild(textnode);
         document.getElementById("contactHolder").appendChild(node);
@@ -341,6 +343,7 @@ function displayCreateList() {
         inputNode.setAttribute("onclick", "updateNewList(this)");
         pNode.appendChild(inputNode);
         pNode.appendChild(textnode);
+        divNode.setAttribute("class","text-center");
 
         divNode.appendChild(pNode);
 
