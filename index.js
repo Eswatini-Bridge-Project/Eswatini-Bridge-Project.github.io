@@ -223,7 +223,7 @@ function send(number, message) {
     var settings = {
         "async": false,
         "crossDomain": true,
-        "url": "https://api.twilio.com/2010-04-01/Accounts/ACd39a50f2581980a42fa759d2a587253b/Messages.json",
+        "url": "https://api.twilio.com/2010-04-01/Accounts/"+full+"/Messages.json",
         "method": "POST",
         "beforeSend": function (xhr) {
             /* Authorization header */
