@@ -86,6 +86,8 @@ function getInfo(theUrl) {
 }
 
 function setUpHomePage() {
+
+
     document.getElementById("titleHeader").innerHTML += localStorage.name;
     
     document.getElementById("date").value = "2014-01-02T11:42";
@@ -96,8 +98,8 @@ function setUpHomePage() {
     var lists = [];
 
     //load contacts
-   /* var contacts = getInfo("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD");
-    console.log("contacts are:",contacts);*/
+   	getInfo("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD");
+    console.log("contacts are:",localstorage.number)
     
     fetch("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD")
         .then(reposResponse => {
