@@ -216,7 +216,7 @@ function send(number, message) {
     /*form.append("MediaUrl", "https://images.unsplash.com/photo-1545093149-618ce3bcf49d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80");*/
 
     var settings = {
-        "async": true,
+        "async": false,
         "crossDomain": true,
         "url": "https://api.twilio.com/2010-04-01/Accounts/ACd39a50f2581980a42fa759d2a587253b/Messages.json",
         "method": "POST",
