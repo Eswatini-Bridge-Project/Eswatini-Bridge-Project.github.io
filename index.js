@@ -99,7 +99,7 @@ function setUpHomePage() {
 
     //load contacts
    	getInfo("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD");
-    console.log("contacts are:",localstorage.number)
+    console.log("contacts are:",localStorage.number)
     
     fetch("https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/contact?api_key=keynre40bTqHjQ7AD")
         .then(reposResponse => {
