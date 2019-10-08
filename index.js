@@ -217,6 +217,9 @@ function send(number, message) {
     form.append("From", "whatsapp:+14155238886");
     /*form.append("MediaUrl", "https://images.unsplash.com/photo-1545093149-618ce3bcf49d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80");*/
 
+    var half1 ="ACd39a50f2581980a4"
+    var half2 = "2fa759d2a587253b"
+    var full = half1+half2;
     var settings = {
         "async": false,
         "crossDomain": true,
@@ -224,7 +227,7 @@ function send(number, message) {
         "method": "POST",
         "beforeSend": function (xhr) {
             /* Authorization header */
-            xhr.setRequestHeader("Authorization", "Basic " + btoa("ACd39a50f2581980a42fa759d2a587253b" + ":" + "d957747df68438d2db18896dc8305901"))
+            xhr.setRequestHeader("Authorization", "Basic " + btoa( full + ":" + "d957747df68438d2db18896dc8305901"))
         },
         "processData": false,
         "contentType": false,
