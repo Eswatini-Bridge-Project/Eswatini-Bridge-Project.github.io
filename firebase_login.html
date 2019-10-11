@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login | WAM</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="firebase_index.js"></script>
+    
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
+
+    <!-- Bootstrap CSS --> <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="index.css">
+    
+</head>
+<body>
+    
+    <div id="loader" style="display: none">
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    
+<div class="login-form">
+    <div class="cotainer">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">WAM login page</div>
+                    <div class="card-body">
+                        <form action="" method="" id="loginForm">
+                            <div class="form-group row">
+                                <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
+                                <div class="col-md-6">
+                                    <input type="text" id="loginemail" class="form-control" name="email-address" required autofocus>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                                <div class="col-md-6">
+                                    <input type="password" id="loginpassword" class="form-control" name="password" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 offset-md-4">
+                                <button type="button" class="btn btn-primary" onclick="login()">
+                                    Login
+                                </button>
+                                <a href="#" id="signUpButton" class="btn btn-link" onclick="showSignup()">
+                                    Register
+                                </a>
+                            </div>
+                    </div>
+                    </form>
+                    
+                        <form id="signUpForm" style="display:none">
+                                <div class="form-group row">
+                                    <label for="email_address" class="col-md-4 col-form-label text-md-right">Name</label>
+                                    <div class="col-md-6">
+                                        <input type="name" id="signupname" class="form-control" required autofocus>
+                                    </div>
+                                </div>
+                            
+                                <div class="form-group row">
+                                    <label for="email_address" class="col-md-4 col-form-label text-md-right">Email</label>
+                                    <div class="col-md-6">
+                                        <input type="email" id="signupemail" class="form-control" required autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                                    <div class="col-md-6">
+                                        <input type="password" id="signuppassword" class="form-control" name="password" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 offset-md-4">
+                                    <button type="button" class="btn btn-primary" onclick="signUp()">
+                                        Sign up
+                                    </button>
+                                </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</div>
+
+<script>
+    
+    
+    function signUp(){
+        toggleLoader();
+        
+        var email = document.getElementById("signupemail").value;
+        var password = document.getElementById("signuppassword").value;
+        var name = document.getElementById("signupname").value;
+        
+        firebase.auth().signOut().then(function() {
+          }, function(error) {
+            // An error happened.
+            alert("signoutError: "+error.message);
+
+          });
+        
+        firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // ...
+            
+            alert(errorMessage);
+        });
+        
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            // User is signed in.
+            var displayName = user.displayName;
+            var email = user.email;
+            var emailVerified = user.emailVerified;
+            var photoURL = user.photoURL;
+            var isAnonymous = user.isAnonymous;
+            var uid = user.uid;
+            var providerData = user.providerData;
+              
+            //create a new branch
+              var db = firebase.firestore();
+              // Add a new document in collection "cities"
+                db.collection("users").doc(uid).set({
+                    "email":email,
+                    "name":name,
+                    "contacts":{"+26876068480":{
+                                    "name":"sisekelo",
+                                    "number" :"+26876068480",
+                                    "list" : ["dancers","all"]
+                    },
+                                "+26879068480":{
+                                    "name":"sisekelo2",
+                                    "number" :"+26879068480",
+                                    "list" : ["dancers","all"]
+                                },
+                               },
+                    "lists":[] 
+                })
+                .then(function() {
+                    console.log("Document successfully written!");
+                    toggleLoader();
+                    window.location.href = "firebase_login.html";
+                })
+                .catch(function(error) {
+                    alert("Error writing document: ", error);
+                });
+            // ...
+          }
+        });
+    }
+    
+    function login(){
+        
+        toggleLoader();
+        
+        var email = document.getElementById("loginemail").value;
+        var password = document.getElementById("loginpassword").value;
+        
+        firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+            
+            alert(errorMessage);
+            window.location.reload();
+          // ...
+        });
+        
+        firebase.auth().onAuthStateChanged(function(user) {
+          if (user) {
+            // User is signed in.
+            var displayName = user.displayName;
+            var email = user.email;
+            var emailVerified = user.emailVerified;
+            var photoURL = user.photoURL;
+            var isAnonymous = user.isAnonymous;
+            var uid = user.uid;
+            var providerData = user.providerData;
+              
+              var db = firebase.firestore();
+              
+              var docRef = db.collection("users").doc(uid);
+
+                docRef.get().then(function(doc) {
+                    if (doc.exists) {
+                        console.log("Document data:", doc.data());
+                        //alert("successful login!"+user.email);
+                        toggleLoader();
+                        window.location.href = `firebase_home.html?name=${doc.data().name}`;
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No such document!");
+                    }
+                }).catch(function(error) {
+                    console.log("Error getting document:", error);
+                });
+            // ...
+          } else {
+            // User is signed out.
+            // ...
+          }
+        });
+    }
+    
+    
+    
+    
+</script>
+    
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-analytics.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAc9w-x_2GARx1jXnMf73dF8FOAP74-y1g",
+    authDomain: "project-cage-c27d3.firebaseapp.com",
+    databaseURL: "https://project-cage-c27d3.firebaseio.com",
+    projectId: "project-cage-c27d3",
+    storageBucket: "",
+    messagingSenderId: "402979153891",
+    appId: "1:402979153891:web:be8545e8304ee3f713e2d6",
+    measurementId: "G-GMELQLQ58L"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
+
+<!-- Add Firebase products that you want to use -->
+  <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-firestore.js"></script>
+</body>
+
+</html>
