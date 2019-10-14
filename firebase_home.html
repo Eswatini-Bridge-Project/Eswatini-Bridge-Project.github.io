@@ -18,11 +18,16 @@
     <link rel="icon" type="image/png" sizes="32x32" href="icons/house/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icons/house/favicon-16x16.png">
     <link rel="manifest" href="icons/house/site.webmanifest">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    
     
     
 </head>
 
 <body onload="setUpHomePage()">
+    
+    
     
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <a class="navbar-brand" href="#">📤W.A.M</a>
@@ -98,6 +103,8 @@
           <span class="sr-only">Loading...</span>
         </div>
     </div>
+    
+    
 
     <section class="pricing py-5">
         
@@ -131,8 +138,10 @@
 
                 </div>
                   <h1 class="card-title text-uppercase text-center">contacts<a href="#" class="badge badge-info" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">+</a></h1>
+                  <form id="allContactsForm">
                   <div id="allContacts">
                     </div>
+                  </form>
               </div>
             </div>
           </div>
@@ -156,7 +165,7 @@
             <div class="card">
               <div class="card-body">
                 <h5 class="card-title text-muted text-uppercase text-center">when</h5>
-                <a href="javascript:sendMessage();" class="btn btn-block btn-primary text-uppercase">send now</a>
+                <button onclick="javascript:sendMessage();" type="button" class="btn btn-block btn-primary text-uppercase">send now</button>
                 <hr>
                   <input type="datetime-local" id="date" style="width: 100%">
             
@@ -171,6 +180,12 @@
     </section>
 
     <h1>Share this link to add a new contact: <a href="http://bit.ly/wam-form">http://bit.ly/wam-form</a></h1>
+    
+    <script>
+        
+        
+    
+    </script>
     
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-app.js"></script>
