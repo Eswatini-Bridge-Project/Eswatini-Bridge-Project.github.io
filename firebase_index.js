@@ -123,41 +123,96 @@ function createContactCard(name, number, parentDiv) {
 
 function sendMessage() {
 
-    document.getElementById("loader").style.display = "block";
+    toggleLoader();
 
     var message = document.getElementById("sendMessageText").value;
 
     var contactList = document.getElementById("contactHolder").childNodes;
-
+    
     if (checkEmptiness(message, "Message")) {
         if (contactList.length == 1) {
             alert(`Please select some contacts😊`);
         } else {
-            var contactHolder = [];
+            
+            if(media == ""){
+                var contactHolder = [];
 
-            for (i = 1; i < contactList.length; i++) {
+                for (i = 1; i < contactList.length; i++) {
 
-                var contact = contactList[i].innerText;
+                    var contact = contactList[i].innerText;
 
-                var number = contact.slice(contact.length - 13, contact.length - 1)
+                    var number = contact.slice(contact.length - 13, contact.length - 1)
 
-                console.log(contact);
+                    console.log(contact);
 
-                contactHolder.push(number);
+                    contactHolder.push(number);
 
-                send(number, message);
-                //alert("message sent!");
-                //window.location.reload(true);
-                //create 1/4 sent
-                
-                toastr.info('Preparing to send your message!');
-                
-                resetInputs();
-                
-                document.body.scrollTop = document.documentElement.scrollTop = 0;
-                
-                toggleLoader();
+                    send(number, message,"");
+                    //alert("message sent!");
+                    //window.location.reload(true);
+                    //create 1/4 sent
+
+                    toastr.info('Preparing to send your message!');
+
+                    resetInputs();
+
+                    document.body.scrollTop = document.documentElement.scrollTop = 0;
+
+                    toggleLoader();
+                }
             }
+            else{
+                //send errthing with media
+                
+                const ref = firebase.storage().ref();
+            
+                const file = document.getElementById('media').files[0];
+
+                //const file = $('#photo').get(0).files[0];
+
+                 const name = (+new Date()) + '-' + file.name;
+
+                const task = ref.child(name).put(file);
+
+                task.then((snapshot) => {
+                    console.log(snapshot);
+                    snapshot.ref.getDownloadURL().then( url => {
+                        console.log(url);
+                        
+                        var contactHolder = [];
+
+                        for (i = 1; i < contactList.length; i++) {
+
+                            var contact = contactList[i].innerText;
+
+                            var number = contact.slice(contact.length - 13, contact.length - 1)
+
+                            console.log(contact);
+
+                            contactHolder.push(number);
+
+                            send(number, message, url);
+                            //alert("message sent!");
+                            //window.location.reload(true);
+                            //create 1/4 sent
+
+                            toastr.info('Preparing to send your message!');
+
+                            resetInputs();
+
+                            document.body.scrollTop = document.documentElement.scrollTop = 0;
+
+                            toggleLoader();
+                        }
+                    }
+
+                   )
+                });
+                
+                
+            }
+            
+            
         }
 
     }
@@ -175,13 +230,17 @@ function resetInputs(){
     inputText.value = "";
 }
 
-function send(number, message) {
+function send(number, message,url) {
 
     var form = new FormData();
     form.append("Body", message);
     form.append("To", `whatsapp:${number}`);
     form.append("From", "whatsapp:+14155238886");
-    /*form.append("MediaUrl", "https://images.unsplash.com/photo-1545093149-618ce3bcf49d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80");*/
+    
+    if(url != ""){
+        form.append("MediaUrl", url);
+    }
+    
     
     var half1 = "d957747df68438";
     var half2 = "d2db18896dc8305901";

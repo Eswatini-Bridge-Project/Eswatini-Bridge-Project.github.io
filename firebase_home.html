@@ -91,7 +91,7 @@
                     <div class="input-group mb-3">
                       <div class="custom-file">
                         <input type="file" class="custom-file-input" id="customFile" onchange="changeCSVLabel(this)">
-                        <label class="custom-file-label" for="customFile" id="customFileLabel">Choose file</label>
+                        <label class="custom-file-label" for="customFile" id="customFileLabel">Choose CSV file</label>
                       </div>
                       <div class="input-group-append">
                         <span class="input-group-text" id="uploadCSV" onclick="uploadCSV()">Upload</span>
@@ -167,6 +167,8 @@
                 <h5 class="card-title text-muted text-uppercase text-center">What</h5>
                   <textarea id="sendMessageText" placeholder="Input your message here!😊" style="width: 100%" rows="4" oninput="checkInputLength(this)" maxlength="200"></textarea>
                   <small>Maximum number of characters is 200</small>
+                  
+                  <input type="file" id="media">
                 <hr>
                   <p>Contacts added:</p>
 
@@ -211,7 +213,7 @@
     authDomain: "project-cage-c27d3.firebaseapp.com",
     databaseURL: "https://project-cage-c27d3.firebaseio.com",
     projectId: "project-cage-c27d3",
-    storageBucket: "",
+    storageBucket: "gs://project-cage-c27d3.appspot.com/",
     messagingSenderId: "402979153891",
     appId: "1:402979153891:web:be8545e8304ee3f713e2d6",
     measurementId: "G-GMELQLQ58L"
@@ -224,6 +226,7 @@
 <!-- Add Firebase products that you want to use -->
   <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-storage.js"></script>
 
 </body>
     
