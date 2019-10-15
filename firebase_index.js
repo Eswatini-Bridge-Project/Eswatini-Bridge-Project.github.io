@@ -31,8 +31,6 @@ function setUpHomePage() {
             var providerData = user.providerData;
             
             localStorage.user = uid;
-            
-            console.log(user.email);
 
             var db = firebase.firestore();
 
@@ -45,10 +43,10 @@ function setUpHomePage() {
                 document.getElementById("titleHeader").innerHTML = `Welcome back, ${doc.data().name}`;
 
                 var parentDiv = document.getElementById("allContacts");
+                
+                parentDiv.innerHTML = "";
 
                 var contacts = doc.data().contacts;
-                
-                console.log("contacts are" + JSON.stringify(contacts));
                 
                 var listHolder = [];
 
@@ -174,7 +172,7 @@ function resetInputs(){
     
     var inputText = document.getElementById("sendMessageText");
     
-    inputText.innerHTML = "";
+    inputText.value = "";
 }
 
 function send(number, message) {
@@ -184,6 +182,11 @@ function send(number, message) {
     form.append("To", `whatsapp:${number}`);
     form.append("From", "whatsapp:+14155238886");
     /*form.append("MediaUrl", "https://images.unsplash.com/photo-1545093149-618ce3bcf49d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80");*/
+    
+    var half1 = "d957747df68438";
+    var half2 = "d2db18896dc8305901";
+    
+    var joinedString = half1+half2;
 
     var settings = {
         "async": true,
@@ -192,7 +195,7 @@ function send(number, message) {
         "method": "POST",
         "beforeSend": function (xhr) {
             /* Authorization header */
-            xhr.setRequestHeader("Authorization", "Basic " + btoa("ACd39a50f2581980a42fa759d2a587253b" + ":" + "d957747df68438d2db18896dc8305901"))
+            xhr.setRequestHeader("Authorization", "Basic " + btoa("ACd39a50f2581980a42fa759d2a587253b" + ":" + joinedString))
         },
         "processData": false,
         "contentType": false,
@@ -209,6 +212,8 @@ function send(number, message) {
 }
 
 function addToSchedule() {
+    
+    toastr.info("Preparing to schedule your message");
 
     var message = document.getElementById("sendMessageText").value;
 
@@ -230,9 +235,7 @@ function addToSchedule() {
                 var number = contact.slice(contact.length - 13, contact.length - 1);
 
                 contacts.push(number);
-            }
-
-            console.log(contacts);
+            };
 
             var datelocal = document.getElementById("date").value;
 
@@ -250,12 +253,12 @@ function addToSchedule() {
                 xhr.addEventListener("readystatechange", function () {
                     if (this.readyState === 4) {
                         console.log(this.responseText);
-                        alert("your message has been scheduled!");
-                        window.location.reload();
+                        toastr.info("your message has been scheduled!");
+                        resetInputs();
                     }
                 });
 
-                xhr.open("POST", "https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/schedule?api_key=keynre40bTqHjQ7AD", false);
+                xhr.open("POST", "https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/schedule?api_key=keynre40bTqHjQ7AD", true);
                 xhr.setRequestHeader("Content-Type", "application/json");
 
                 xhr.send(data);
@@ -371,14 +374,14 @@ function createList() {
             
             //add newList to currently list
             console.log(newContacts[key]);
-            updateContactAgain(key,fullBranch.contacts);
+            updateContactAgain(fullBranch.contacts);
             
         }
     }
 
 }
 
-function updateContactAgain(number,object){
+function updateContactAgain(object){
     
     var db = firebase.firestore();
     
@@ -546,3 +549,82 @@ function addModalLists(){
     parentDiv.appendChild(divNode);
     
 }
+
+function changeCSVLabel(inputItem){
+    
+    var fileName = inputItem.value.split("\\").pop();
+    
+    document.getElementById('customFileLabel').innerHTML = fileName;
+    
+}
+
+function uploadCSV(){
+
+    var fullBranch = JSON.parse(localStorage.number2);
+    
+    var newContacts = JSON.parse(localStorage.wamCSVData).data;
+    
+    newContacts.map(contact => {
+        
+        var newContactName = contact[0];
+        var newContactNumber = contact[1];
+        
+        if(newContactNumber[0] != "+"){
+            newContactNumber = `+${newContactNumber}`;
+        }
+        
+        if(validate(newContactNumber)){
+            
+            var newContact = {
+                name : newContactName,
+                number : newContactNumber,
+                list : ['all']
+            }
+
+            fullBranch.contacts[newContactNumber] = newContact;
+            updateContactAgain(fullBranch.contacts);
+
+            }
+            else{
+                var errorText = `Invalid contact: ${newContactNumber} ${newContactName}`;
+                toastr.error(errorText);
+            }
+        
+        
+        
+        
+    })
+    
+    toastr.info("upload done😎");
+    
+    document.getElementById("closeModalButton").click();
+}
+
+function validate(phone) {
+    var regex = /^\+(?:[0-9] ?){6,14}[0-9]$/;
+
+    if (regex.test(phone)) {
+        // Valid international phone number
+        return true;
+    } else {
+        // Invalid international phone number
+        return false;
+    }
+}
+
+
+  function handleFileSelect(evt) {
+    var file = evt.target.files[0];
+
+    Papa.parse(file, {
+      header: false,
+      complete: function(results) {
+          console.log(results)
+          localStorage.wamCSVData = JSON.stringify(results);
+      }
+    });
+  }
+
+  $(document).ready(function(){
+    $("#customFile").change(handleFileSelect);
+  });

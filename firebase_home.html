@@ -20,6 +20,7 @@
     <link rel="manifest" href="icons/house/site.webmanifest">
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
     
     
     
@@ -76,21 +77,35 @@
                     <input type="text" class="form-control" id="addContactNumber" placeholder="+268XXXXXXXX">
                     <small id="emailHelp" class="form-text text-muted">Please ensure it has the right country formatting</small>
                   </div>
-                 
-                 <!--<div class="form-group">
-                  <div class="form-check" id="modalLists">
-                    <p>Lists</p>
-                    <input type="checkbox" class="form-check-input">
-                    <label class="form-check-label">Check me out</label>
-                  </div>
-                 </div>-->
                 </form>
+                
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="submitNewContact" onclick="addNewContact()">Submit</button>
+                </div>
+                
+                <hr>
+                
+                <h4>Import via CSV</h4>
+                
+                <div id="uploadCSVFileDiv">
+                    <div class="input-group mb-3">
+                      <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="customFile" onchange="changeCSVLabel(this)">
+                        <label class="custom-file-label" for="customFile" id="customFileLabel">Choose file</label>
+                      </div>
+                      <div class="input-group-append">
+                        <span class="input-group-text" id="uploadCSV" onclick="uploadCSV()">Upload</span>
+                      </div>
+                    </div>
+                    <small id="emailHelp" class="form-text text-muted">CSV files only please😊</small>
+                </div>
+                
+                
             </div>
 
             <!-- Modal footer -->
             <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" id="submitNewContact" onclick="addNewContact()">Submit</button>
-              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-danger" data-dismiss="modal" id="closeModalButton">Close</button>
             </div>
 
           </div>
@@ -137,7 +152,7 @@
                     <h1 class="card-title text-uppercase text-center">Subscription Lists</h1>
 
                 </div>
-                  <h1 class="card-title text-uppercase text-center">contacts<a href="#" class="badge badge-info" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">+</a></h1>
+                  <h1 class="card-title text-uppercase text-center">contacts<a id="modalPlus" href="#" class="badge badge-info" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">+</a></h1>
                   <form id="allContactsForm">
                   <div id="allContacts">
                     </div>
@@ -180,12 +195,6 @@
     </section>
 
     <h1>Share this link to add a new contact: <a href="http://bit.ly/wam-form">http://bit.ly/wam-form</a></h1>
-    
-    <script>
-        
-        
-    
-    </script>
     
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-app.js"></script>
