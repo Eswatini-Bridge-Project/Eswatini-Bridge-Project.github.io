@@ -165,7 +165,8 @@
             <div class="card mb-5 mb-lg-0">
               <div class="card-body">
                 <h5 class="card-title text-muted text-uppercase text-center">What</h5>
-                  <textarea id="sendMessageText" placeholder="Input your message here!😊" style="width: 100%" rows="4"></textarea>
+                  <textarea id="sendMessageText" placeholder="Input your message here!😊" style="width: 100%" rows="4" oninput="checkInputLength(this)" maxlength="200"></textarea>
+                  <small>Maximum number of characters is 200</small>
                 <hr>
                   <p>Contacts added:</p>
 

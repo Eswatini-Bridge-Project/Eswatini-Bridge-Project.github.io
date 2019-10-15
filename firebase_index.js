@@ -612,8 +612,7 @@ function validate(phone) {
     }
 }
 
-
-  function handleFileSelect(evt) {
+function handleFileSelect(evt) {
     var file = evt.target.files[0];
 
     Papa.parse(file, {
@@ -625,6 +624,16 @@ function validate(phone) {
     });
   }
 
-  $(document).ready(function(){
+$(document).ready(function(){
     $("#customFile").change(handleFileSelect);
   });
+
+function checkInputLength(item){
+    
+    console.log(item.value.length)
+    
+    if(item.value.length == 200){
+        toastr.error("You've reached your character limit😨")
+    }
+    
+}
