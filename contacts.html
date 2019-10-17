@@ -106,7 +106,7 @@
         gapi.client.people.people.connections.list({
            'resourceName': 'people/me',
            'pageSize': 2000,
-           'personFields': 'names,emailAddresses',
+           'personFields': 'names,emailAddresses,phoneNumbers',
          }).then(function(response) {
 
             console.log(response);
