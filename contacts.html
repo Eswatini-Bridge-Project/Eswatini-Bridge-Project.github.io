@@ -105,10 +105,13 @@
       function listConnectionNames() {
         gapi.client.people.people.connections.list({
            'resourceName': 'people/me',
-           'pageSize': 10,
+           'pageSize': 10000,
            'personFields': 'names,emailAddresses',
          }).then(function(response) {
+
+            console.log(response);
            var connections = response.result.connections;
+           console.log(connections);
            appendPre('Connections:');
 
            if (connections.length > 0) {
