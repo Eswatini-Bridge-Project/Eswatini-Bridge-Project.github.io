@@ -105,7 +105,7 @@
       function listConnectionNames() {
         gapi.client.people.people.connections.list({
            'resourceName': 'people/me',
-           'pageSize': 10000,
+           'pageSize': 2000,
            'personFields': 'names,emailAddresses',
          }).then(function(response) {
 
