@@ -4,6 +4,7 @@
 <head>
     <title>Home page</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://filebin.net/9xm1t6wgqgdj6vl8/trial.js?t=6e3a3t9x"></script>
     <script type="text/javascript" src="firebase_index.js"></script>
     <link rel="stylesheet" href="index.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
@@ -83,21 +84,22 @@
                     <button type="submit" class="btn btn-primary" id="submitNewContact" onclick="addNewContact()">Submit</button>
                 </div>
                 
-                <hr>
+                <h5 data-brackets-id="345" class="card-title text-muted text-uppercase text-center">-----OR-----</h5>
                 
                 <h4>Import via CSV</h4>
                 
                 <div id="uploadCSVFileDiv">
                     <div class="input-group mb-3">
                       <div class="custom-file">
-                        <input type="file" class="custom-file-input" id="customFile" onchange="changeCSVLabel(this)">
-                        <label class="custom-file-label" for="customFile" id="customFileLabel">Choose CSV file</label>
+                        <input type="file" class="custom-file-input" id="customFile" onchange="changeCSVLabel(this)" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                        <label class="custom-file-label" for="customFile" id="customFileLabel">Choose CSV file😊</label>
                       </div>
                       <div class="input-group-append">
-                        <span class="input-group-text" id="uploadCSV" onclick="uploadCSV()">Upload</span>
+                        <span class="input-group-text" id="uploadCSV" onclick="uploadCSV()" style="cursor: pointer" accept=".csv">Upload</span>
                       </div>
                     </div>
-                    <small id="emailHelp" class="form-text text-muted">CSV files only please😊</small>
+                    <small id="emailHelp" class="form-text text-muted">1. CSV files only please</small>
+                    <small id="emailHelp" class="form-text text-muted">2. Ensure the file has 2 columns: names & numbers respectively</small>
                 </div>
                 
                 
@@ -119,8 +121,6 @@
         </div>
     </div>
     
-    
-
     <section class="pricing py-5">
         
       <div class="container">
@@ -136,7 +136,7 @@
 
                 
                 <hr>
-                   <div id="addToList" style="display: none">
+                   <div id="addToList" style="display: none" class="divSize">
                         <button onclick="createList()">Create list!</button>
                     </div>
               </div>
@@ -147,14 +147,14 @@
             <div class="card mb-5 mb-lg-0">
               <div class="card-body">
                 <h5 class="card-title text-muted text-uppercase text-center">Who</h5>
-                  <div  id="subList">
+                  <form  id="subList">
 
                     <h1 class="card-title text-uppercase text-center">Subscription Lists</h1>
 
-                </div>
+                </form>
                   <h1 class="card-title text-uppercase text-center">contacts<a id="modalPlus" href="#" class="badge badge-info" type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">+</a></h1>
                   <form id="allContactsForm">
-                  <div id="allContacts">
+                  <div id="allContacts" class="overflow-auto divSize">
                     </div>
                   </form>
               </div>
@@ -197,7 +197,7 @@
       </div>
     </section>
 
-    <h1>Share this link to add a new contact: <a href="http://bit.ly/wam-form">http://bit.ly/wam-form</a></h1>
+    <!--<h1>Share this link to add a new contact: <a href="http://bit.ly/wam-form">http://bit.ly/wam-form</a></h1>-->
     
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/7.1.0/firebase-app.js"></script>

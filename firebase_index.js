@@ -1,3 +1,5 @@
+console.log(superdupa);
+
 function showSignup() {
     var signupform = document.getElementById("signUpForm");
 
@@ -8,14 +10,25 @@ function showSignup() {
 }
 
 function setUpHomePage() {
-    
+
     toggleLoader();
-    
+
     var urlParams = new URLSearchParams(window.location.search);
-    
+
     document.getElementById("titleHeader").innerHTML += urlParams.get('name');
-    
-    document.getElementById("date").value = "2014-01-02T11:42";
+
+    var newDate = new Date();
+    var currentYear = newDate.getFullYear();
+    var currentMonth = newDate.getMonth() + 1;
+    var currentDay = newDate.getDate();
+    var currentHour = newDate.getHours();
+    var currentMinute = newDate.getMinutes();
+
+    if (currentMinute < 10) {
+        currentMinute = `0${currentMinute}`;
+    }
+
+    document.getElementById("date").value = `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}`;
     localStorage.contactsToBeUpdated = "";
 
 
@@ -29,7 +42,7 @@ function setUpHomePage() {
             var isAnonymous = user.isAnonymous;
             var uid = user.uid;
             var providerData = user.providerData;
-            
+
             localStorage.user = uid;
 
             var db = firebase.firestore();
@@ -37,17 +50,17 @@ function setUpHomePage() {
             var docRef = db.collection("users").doc(uid);
 
             docRef.onSnapshot(function (doc) {
-                
+
                 localStorage.number2 = JSON.stringify(doc.data());
-                
+
                 document.getElementById("titleHeader").innerHTML = `Welcome back, ${doc.data().name}`;
 
                 var parentDiv = document.getElementById("allContacts");
-                
+
                 parentDiv.innerHTML = "";
 
                 var contacts = doc.data().contacts;
-                
+
                 var listHolder = [];
 
                 for (var key in contacts) {
@@ -57,7 +70,7 @@ function setUpHomePage() {
                     var lists = contactDetails.list;
 
                     createContactCard(name, number, parentDiv);
-                    
+
                     //add the lists from contact to list
                     lists.map(list => {
                         if (!listHolder.includes(list)) {
@@ -65,24 +78,23 @@ function setUpHomePage() {
                         }
                     })
                 }
-                
+
                 localStorage.lists = listHolder;
 
-                    listHolder.map(list => {
-                        var parentDiv = document.getElementById("subList");
-                        createListCard(list, parentDiv);
-                    })
-                
+                listHolder.map(list => {
+                    var parentDiv = document.getElementById("subList");
+                    createListCard(list, parentDiv);
+                })
+
                 toggleLoader();
             });
 
-        }
-        else{
+        } else {
             alert('you have not logged in!');
-            window.location.href='firebase_login.html'
+            window.location.href = 'firebase_login.html'
         }
     });
-    
+
 }
 
 function createListCard(list, parentDiv) {
@@ -128,13 +140,15 @@ function sendMessage() {
     var message = document.getElementById("sendMessageText").value;
 
     var contactList = document.getElementById("contactHolder").childNodes;
-    
+
+    var media = document.getElementById("media").value;
+
     if (checkEmptiness(message, "Message")) {
         if (contactList.length == 1) {
             alert(`Please select some contacts😊`);
         } else {
-            
-            if(media == ""){
+
+            if (media == "") {
                 var contactHolder = [];
 
                 for (i = 1; i < contactList.length; i++) {
@@ -147,7 +161,7 @@ function sendMessage() {
 
                     contactHolder.push(number);
 
-                    send(number, message,"");
+                    send(number, message, "");
                     //alert("message sent!");
                     //window.location.reload(true);
                     //create 1/4 sent
@@ -160,92 +174,83 @@ function sendMessage() {
 
                     toggleLoader();
                 }
-            }
-            else{
+            } else {
                 //send errthing with media
-                
+
                 const ref = firebase.storage().ref();
-            
+
                 const file = document.getElementById('media').files[0];
 
                 //const file = $('#photo').get(0).files[0];
 
-                 const name = (+new Date()) + '-' + file.name;
+                const name = (+new Date()) + '-' + file.name;
 
                 const task = ref.child(name).put(file);
 
+                toastr.info('uploading your media')
+
                 task.then((snapshot) => {
                     console.log(snapshot);
-                    snapshot.ref.getDownloadURL().then( url => {
-                        console.log(url);
-                        
-                        var contactHolder = [];
+                    snapshot.ref.getDownloadURL().then(url => {
 
-                        for (i = 1; i < contactList.length; i++) {
 
-                            var contact = contactList[i].innerText;
+                            console.log(url);
 
-                            var number = contact.slice(contact.length - 13, contact.length - 1)
+                            var contactHolder = [];
 
-                            console.log(contact);
+                            for (i = 1; i < contactList.length; i++) {
 
-                            contactHolder.push(number);
+                                var contact = contactList[i].innerText;
 
-                            send(number, message, url);
-                            //alert("message sent!");
-                            //window.location.reload(true);
-                            //create 1/4 sent
+                                var number = contact.slice(contact.length - 13, contact.length - 1)
 
-                            toastr.info('Preparing to send your message!');
+                                console.log(contact);
 
-                            resetInputs();
+                                contactHolder.push(number);
 
-                            document.body.scrollTop = document.documentElement.scrollTop = 0;
+                                send(number, message, url);
+                                //alert("message sent!");
+                                //window.location.reload(true);
+                                //create 1/4 sent
 
-                            toggleLoader();
+                                toastr.info('Preparing to send your message!');
+                            }
                         }
-                    }
 
-                   )
+                    )
                 });
-                
-                
+
+                resetInputs();
+
+                document.body.scrollTop = document.documentElement.scrollTop = 0;
+
+                toggleLoader();
+
+
             }
-            
-            
+
+
         }
 
     }
 }
 
-function resetInputs(){
-    var contacts = document.getElementById("allContactsForm");
-    contacts.reset();
-    
-    var selectedContacts = document.getElementById("contactHolder");
-    selectedContacts.innerHTML="";
-    
-    var inputText = document.getElementById("sendMessageText");
-    
-    inputText.value = "";
-}
-
-function send(number, message,url) {
+function send(number, message, url) {
 
     var form = new FormData();
     form.append("Body", message);
     form.append("To", `whatsapp:${number}`);
     form.append("From", "whatsapp:+14155238886");
-    
-    if(url != ""){
+
+    if (url != "") {
         form.append("MediaUrl", url);
     }
-    
-    
+
+
     var half1 = "d957747df68438";
     var half2 = "d2db18896dc8305901";
-    
-    var joinedString = half1+half2;
+
+    var joinedString = half1 + half2;
 
     var settings = {
         "async": true,
@@ -262,67 +267,155 @@ function send(number, message,url) {
         "data": form
     };
 
-    $.ajax(settings).done(function (response,status) {
+    $.ajax(settings).done(function (response, status) {
         console.log(response);
         console.log(status);
-        toastr.success(`Your message was a ${status} 😎`);
+
+        if (status == "success") {
+            toastr.success(`Your message was a ${status} 😎`);
+        } else {
+            toastr.error(`Error sending your message ${status}😨`);
+        }
+
 
     });
 }
 
 function addToSchedule() {
-    
+
     toastr.info("Preparing to schedule your message");
 
     var message = document.getElementById("sendMessageText").value;
 
     var contactList = document.getElementById("contactHolder").childNodes;
 
+    var media = document.getElementById("media").value;
+
     if (checkEmptiness(message, "Message")) {
 
         if (contactList.length == 1) {
             alert(`Please select some contacts😊`)
         } else {
-            var contacts = [];
 
-            console.log(contacts);
+            if (media == "") {
+                var contacts = [];
 
-            for (i = 1; i < contactList.length; i++) {
+                console.log(contacts);
 
-                var contact = contactList[i].innerText;
+                for (i = 1; i < contactList.length; i++) {
 
-                var number = contact.slice(contact.length - 13, contact.length - 1);
+                    var contact = contactList[i].innerText;
 
-                contacts.push(number);
-            };
+                    var number = contact.slice(contact.length - 13, contact.length - 1);
 
-            var datelocal = document.getElementById("date").value;
+                    contacts.push(number);
+                };
 
-            if (checkEmptiness(datelocal, "Date")) {
-                var data = JSON.stringify({
-                    "fields": {
-                        "Message": message,
-                        "Contacts": contacts.toString(),
-                        "Date": datelocal
-                    }
+                var datelocal = document.getElementById("date").value;
+
+                if (checkEmptiness(datelocal, "Date")) {
+                    var data = JSON.stringify({
+                        "fields": {
+                            "Message": message,
+                            "Contacts": contacts.toString(),
+                            "Date": datelocal
+                        }
+                    });
+
+                    var xhr = new XMLHttpRequest();
+
+                    xhr.addEventListener("readystatechange", function () {
+                        if (this.readyState === 4) {
+                            console.log(this.responseText);
+                            toastr.info("your message has been scheduled!");
+                            resetInputs();
+                        }
+                    });
+
+                    xhr.open("POST", "https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/schedule?api_key=keynre40bTqHjQ7AD", true);
+                    xhr.setRequestHeader("Content-Type", "application/json");
+
+                    xhr.send(data);
+                };
+
+            } else {
+
+                const ref = firebase.storage().ref();
+
+                const file = document.getElementById('media').files[0];
+
+                const name = (+new Date()) + '-' + file.name;
+
+                const task = ref.child(name).put(file);
+
+                toastr.info('uploading your media')
+
+                task.then((snapshot) => {
+                    console.log(snapshot);
+                    snapshot.ref.getDownloadURL().then(url => {
+
+                            toastr.info('Media uploaded');
+
+                            var contacts = [];
+
+                            console.log(contacts);
+
+                            for (i = 1; i < contactList.length; i++) {
+
+                                var contact = contactList[i].innerText;
+
+                                var number = contact.slice(contact.length - 13, contact.length - 1);
+
+                                contacts.push(number);
+                            };
+
+                            var datelocal = document.getElementById("date").value;
+
+                            if (checkEmptiness(datelocal, "Date")) {
+                                var data = JSON.stringify({
+                                    "fields": {
+                                        "Message": message,
+                                        "Contacts": contacts.toString(),
+                                        "Date": datelocal,
+                                        "Media": url
+                                    }
+                                });
+
+                                var xhr = new XMLHttpRequest();
+
+                                xhr.addEventListener("readystatechange", function () {
+                                    if (this.readyState === 4) {
+                                        console.log(this.responseText);
+                                        toastr.info("your message has been scheduled!");
+                                        resetInputs();
+                                    }
+                                });
+
+                                xhr.open("POST", "https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/schedule?api_key=keynre40bTqHjQ7AD", true);
+                                xhr.setRequestHeader("Content-Type", "application/json");
+
+                                xhr.send(data);
+                            };
+
+
+
+                        }
+
+                    )
                 });
 
-                var xhr = new XMLHttpRequest();
+                resetInputs();
 
-                xhr.addEventListener("readystatechange", function () {
-                    if (this.readyState === 4) {
-                        console.log(this.responseText);
-                        toastr.info("your message has been scheduled!");
-                        resetInputs();
-                    }
-                });
+                document.body.scrollTop = document.documentElement.scrollTop = 0;
 
-                xhr.open("POST", "https://api.airtable.com/v0/appJn2IJZWW7Yn5Fh/schedule?api_key=keynre40bTqHjQ7AD", true);
-                xhr.setRequestHeader("Content-Type", "application/json");
+                toggleLoader();
 
-                xhr.send(data);
-            };
+            }
         }
+
+        //if yes
+        //create link
+        //then use link add to schedule
 
 
 
@@ -368,44 +461,60 @@ function checker(item) {
 }
 
 function displayCreateList() {
+
     var holder = document.getElementById("addToList");
-    holder.style.display = "block";
 
-    //add input
-    var input = document.createElement("INPUT");
-    input.setAttribute("type", "text");
-    input.setAttribute("id", "listTitle");
-    input.setAttribute("placeholder", "insert name of list");
-
-    holder.appendChild(input);
-
-    //add CREATE Button
-
-    //load contacts
-    
-    var allData = JSON.parse(localStorage.number2);
+    if (holder.style.display != "block") {
         
+        holder.innerHTML = "";
+
+        holder.style.display = "block";
+        
+        //add button
+        var button = document.createElement("BUTTON");
+        var textNode = document.createTextNode("create list");
+        button.appendChild(textNode);
+        button.setAttribute("onclick","createList()");
+        holder.appendChild(button);
+
+        //add input
+        var input = document.createElement("INPUT");
+        input.setAttribute("type", "text");
+        input.setAttribute("id", "listTitle");
+        input.setAttribute("placeholder", "insert name of list");
+
+        holder.appendChild(input);
+
+        //add CREATE Button
+
+        //load contacts
+
+        var allData = JSON.parse(localStorage.number2);
+
         for (var key in allData.contacts) {
-                    var contactDetails = allData.contacts[key];
-                    var number = contactDetails.number;
-                    var name = contactDetails.name;
+            var contactDetails = allData.contacts[key];
+            var number = contactDetails.number;
+            var name = contactDetails.name;
 
-                    var divNode = document.createElement("DIV");
-                    var pNode = document.createElement("P");
-                    var inputNode = document.createElement("INPUT");
-                    var textnode = document.createTextNode(`${name} (${number})`);
+            var divNode = document.createElement("DIV");
+            var pNode = document.createElement("P");
+            var inputNode = document.createElement("INPUT");
+            var textnode = document.createTextNode(`${name} (${number})`);
 
-                    inputNode.setAttribute("type", "checkbox");
-                    inputNode.setAttribute("onclick", "updateNewList(this)");
-                    pNode.appendChild(inputNode);
-                    pNode.appendChild(textnode);
-                    divNode.setAttribute("class", "text-center");
+            inputNode.setAttribute("type", "checkbox");
+            inputNode.setAttribute("onclick", "updateNewList(this)");
+            pNode.appendChild(inputNode);
+            pNode.appendChild(textnode);
 
-                    divNode.appendChild(pNode);
+            divNode.appendChild(pNode);
 
-                    holder.appendChild(divNode);
-                }
-    
+            holder.appendChild(divNode);
+        }
+
+    } else {
+        holder.style.display = "none"
+    }
+
 }
 
 function createList() {
@@ -414,50 +523,50 @@ function createList() {
     //get added contacts from localstorage.newContactList
 
     var numbers = localStorage.contactsToBeUpdated.split(";");
-    
+
     var newContacts = JSON.parse(localStorage.number2).contacts;
-    
+
     var fullBranch = JSON.parse(localStorage.number2);
-    
-    for(key in newContacts){
-        
+
+    for (key in newContacts) {
+
         console.log(numbers);
         console.log(key);
-        if(numbers.includes(key)){
+        if (numbers.includes(key)) {
             console.log(newContacts[key])
             var currentList = newContacts[key].list;
-            
+
             currentList.push(newlist);
-            
-           fullBranch.contacts[key].list = currentList;
-            
+
+            fullBranch.contacts[key].list = currentList;
+
             //add newList to currently list
             console.log(newContacts[key]);
             updateContactAgain(fullBranch.contacts);
-            
+
         }
     }
 
 }
 
-function updateContactAgain(object){
-    
+function updateContactAgain(object) {
+
     var db = firebase.firestore();
-    
+
     var toBeUpdated = db.collection("users").doc(localStorage.user);
 
     // Set the "capital" field of the city 'DC'
     return toBeUpdated.update({
-        contacts : object
-    })
-    .then(function() {
-        console.log("Document successfully updated!");
-        window.location.reload();
-    })
-    .catch(function(error) {
-        // The document probably doesn't exist.
-        console.error("Error updating document: ", error);
-    });
+            contacts: object
+        })
+        .then(function () {
+            console.log("Document successfully updated!");
+            window.location.reload();
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+        });
 }
 
 function updateNewList(item) {
@@ -502,17 +611,17 @@ function checkSubList(item) {
 
     //var contacts = JSON.parse(localStorage.number);
     var contacts2 = JSON.parse(localStorage.number2);
-    
+
     var numbers = contacts2.contacts;
-    
+
     for (var key in contacts2.contacts) {
         var lists = contacts2.contacts[key].list;
         console.log(lists);
-         if (lists.includes(subList)) {
+        if (lists.includes(subList)) {
             //now find this contact and check it
-             
-              var index = Object.keys(numbers).indexOf(key);
-             
+
+            var index = Object.keys(numbers).indexOf(key);
+
             var holder = document.getElementById("allContacts").children[index].children[0].innerText;
 
             var number = holder.slice(holder.length - 13, holder.length - 1)
@@ -548,48 +657,48 @@ function toggleLoader() {
     }
 }
 
-function addNewContact(){
-    var newContactName = document .getElementById("addContactName").value;
+function addNewContact() {
+    var newContactName = document.getElementById("addContactName").value;
     var newContactNumber = document.getElementById("addContactNumber").value;
-    
+
     //send!
     var db = firebase.firestore();
-    
+
     var toBeUpdated = db.collection("users").doc(localStorage.user);
-    
+
     var newContacts = JSON.parse(localStorage.number2).contacts;
-    
+
     newContacts[newContactNumber] = {
-        list : ["all"],
-        number : newContactNumber,
-        name : newContactName
+        list: ["all"],
+        number: newContactNumber,
+        name: newContactName
     }
 
     // Set the "capital" field of the city 'DC'
     return toBeUpdated.update({
-        contacts : newContacts
-    })
-    .then(function() {
-        console.log("Document successfully updated!");
-        window.location.reload();
-    })
-    .catch(function(error) {
-        // The document probably doesn't exist.
-        console.error("Error updating document: ", error);
-    });
+            contacts: newContacts
+        })
+        .then(function () {
+            console.log("Document successfully updated!");
+            window.location.reload();
+        })
+        .catch(function (error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
+        });
 }
 
-function addModalLists(){
-    
+function addModalLists() {
+
     var currentList = localStorage.lists.split(",");
-    
+
     var inputNode = document.createElement("INPUT");
-    
+
     inputNode.setAttribute("type", "checkbox");
     inputNode.setAttribute("id", "checkbox");
-    
-    
-    
+
+
+
     //create a name
     var divNode = document.createElement("DIV");
     var pNode = document.createElement("P");
@@ -606,60 +715,59 @@ function addModalLists(){
     divNode.appendChild(pNode);
 
     parentDiv.appendChild(divNode);
-    
+
 }
 
-function changeCSVLabel(inputItem){
-    
+function changeCSVLabel(inputItem) {
+
     var fileName = inputItem.value.split("\\").pop();
-    
+
     document.getElementById('customFileLabel').innerHTML = fileName;
-    
+
 }
 
-function uploadCSV(){
+function uploadCSV() {
 
     var fullBranch = JSON.parse(localStorage.number2);
-    
+
     var newContacts = JSON.parse(localStorage.wamCSVData).data;
-    
+
     newContacts.map(contact => {
-        
+
         var newContactName = contact[0];
         var newContactNumber = contact[1];
-        
-        if(newContactNumber[0] != "+"){
+
+        if (newContactNumber[0] != "+") {
             newContactNumber = `+${newContactNumber}`;
         }
-        
-        if(validate(newContactNumber)){
-            
+
+        if (validate(newContactNumber)) {
+
             var newContact = {
-                name : newContactName,
-                number : newContactNumber,
-                list : ['all']
+                name: newContactName,
+                number: newContactNumber,
+                list: ['all']
             }
 
             fullBranch.contacts[newContactNumber] = newContact;
             updateContactAgain(fullBranch.contacts);
 
-            }
-            else{
-                var errorText = `Invalid contact: ${newContactNumber} ${newContactName}`;
-                toastr.error(errorText);
-            }
-        
-        
-        
-        
+        } else {
+            var errorText = `Invalid contact: ${newContactNumber} ${newContactName}`;
+            toastr.error(errorText);
+        }
+
+
+
+
     })
-    
+
     toastr.info("upload done😎");
-    
+
     document.getElementById("closeModalButton").click();
 }
 
-function validate(phone) {
+function validatePhoneNumber(phone) {
     var regex = /^\+(?:[0-9] ?){6,14}[0-9]$/;
 
     if (regex.test(phone)) {
@@ -675,24 +783,42 @@ function handleFileSelect(evt) {
     var file = evt.target.files[0];
 
     Papa.parse(file, {
-      header: false,
-      complete: function(results) {
-          console.log(results)
-          localStorage.wamCSVData = JSON.stringify(results);
-      }
+        header: false,
+        complete: function (results) {
+            console.log(results)
+            localStorage.wamCSVData = JSON.stringify(results);
+        }
     });
-  }
+}
 
-$(document).ready(function(){
+$(document).ready(function () {
     $("#customFile").change(handleFileSelect);
-  });
+});
 
-function checkInputLength(item){
-    
+function checkInputLength(item) {
+
     console.log(item.value.length)
-    
-    if(item.value.length == 200){
+
+    if (item.value.length == 200) {
         toastr.error("You've reached your character limit😨")
     }
-    
+
+}
+
+function resetInputs() {
+    var contacts = document.getElementById("allContactsForm");
+    contacts.reset();
+
+    var subscriptionList = document.getElementById("subList");
+    subscriptionList.reset();
+
+    var selectedContacts = document.getElementById("contactHolder");
+    selectedContacts.innerHTML = "";
+
+    var inputText = document.getElementById("sendMessageText");
+
+    inputText.value = "";
+
+    document.getElementById("media").value = ""
+    //add subscription list
 }
