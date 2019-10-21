@@ -1,5 +1,3 @@
-console.log(superdupa);
-
 function showSignup() {
     var signupform = document.getElementById("signUpForm");
 
@@ -27,9 +25,17 @@ function setUpHomePage() {
     if (currentMinute < 10) {
         currentMinute = `0${currentMinute}`;
     }
+    
+    if (currentHour < 10) {
+        currentHour = `0${currentHour}`;
+    }
 
     document.getElementById("date").value = `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}`;
     localStorage.contactsToBeUpdated = "";
+    
+    toggleLoader();
+    
+    
 
 
     firebase.auth().onAuthStateChanged(function (user) {
@@ -50,6 +56,8 @@ function setUpHomePage() {
             var docRef = db.collection("users").doc(uid);
 
             docRef.onSnapshot(function (doc) {
+                
+                toggleLoader();
 
                 localStorage.number2 = JSON.stringify(doc.data());
 
@@ -80,6 +88,21 @@ function setUpHomePage() {
                 }
 
                 localStorage.lists = listHolder;
+                
+                //create title
+                document.getElementById("subList").innerHTML = "";
+                
+                var hNode = document.createElement("H1");
+                var hTitle = document.createTextNode("Subscription Lists");
+                
+                hNode.setAttribute("class","card-title text-uppercase text-center");
+                
+                hNode.appendChild(hTitle);
+                
+                var subListParent = document.getElementById("subList");
+                
+                subListParent.appendChild(hNode);
+                
 
                 listHolder.map(list => {
                     var parentDiv = document.getElementById("subList");
@@ -246,12 +269,6 @@ function send(number, message, url) {
         form.append("MediaUrl", url);
     }
 
-
-    var half1 = "d957747df68438";
-    var half2 = "d2db18896dc8305901";
-
-    var joinedString = half1 + half2;
-
     var settings = {
         "async": true,
         "crossDomain": true,
@@ -259,7 +276,7 @@ function send(number, message, url) {
         "method": "POST",
         "beforeSend": function (xhr) {
             /* Authorization header */
-            xhr.setRequestHeader("Authorization", "Basic " + btoa("ACd39a50f2581980a42fa759d2a587253b" + ":" + joinedString))
+            xhr.setRequestHeader("Authorization", "Basic " + btoa(ACCOUNT_SID + ":" + AUTH_TOKEN))
         },
         "processData": false,
         "contentType": false,
@@ -561,7 +578,7 @@ function updateContactAgain(object) {
         })
         .then(function () {
             console.log("Document successfully updated!");
-            window.location.reload();
+            //window.location.reload();
         })
         .catch(function (error) {
             // The document probably doesn't exist.
@@ -734,32 +751,39 @@ function uploadCSV() {
 
     newContacts.map(contact => {
 
-        var newContactName = contact[0];
-        var newContactNumber = contact[1];
+        var newContactName = contact.Name;
+        var newContactNumber = contact.Number;
+        
+        if(newContactNumber != undefined){
+            newContactName = newContactName.trim();
+            
+            var regex = /[0-9]/g;
+            newContactNumber = newContactNumber.match(regex)+"";
+            newContactNumber = newContactNumber.split(",").join('').trim();
+            
+            console.log(newContactNumber);
 
-        if (newContactNumber[0] != "+") {
-            newContactNumber = `+${newContactNumber}`;
-        }
-
-        if (validate(newContactNumber)) {
-
-            var newContact = {
-                name: newContactName,
-                number: newContactNumber,
-                list: ['all']
+            if (newContactNumber[0] != "+") {
+                newContactNumber = `+${newContactNumber}`;
             }
 
-            fullBranch.contacts[newContactNumber] = newContact;
-            updateContactAgain(fullBranch.contacts);
+            if (validatePhoneNumber(newContactNumber)) {
 
-        } else {
-            var errorText = `Invalid contact: ${newContactNumber} ${newContactName}`;
-            toastr.error(errorText);
+                var newContact = {
+                    name: newContactName,
+                    number: newContactNumber,
+                    list: ['all']
+                }
+
+                fullBranch.contacts[newContactNumber] = newContact;
+                updateContactAgain(fullBranch.contacts);
+
+            } else {
+                var errorText = `Invalid contact: ${newContactNumber} ${newContactName}`;
+                toastr.error(errorText);
+            }
+            
         }
-
-
-
-
     })
 
     toastr.info("upload done😎");
@@ -783,7 +807,7 @@ function handleFileSelect(evt) {
     var file = evt.target.files[0];
 
     Papa.parse(file, {
-        header: false,
+        header: true,
         complete: function (results) {
             console.log(results)
             localStorage.wamCSVData = JSON.stringify(results);
