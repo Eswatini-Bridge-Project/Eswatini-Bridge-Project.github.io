@@ -63,15 +63,18 @@ function getUsers(theUrl){
     
 }
     
-function sendMessage(message,number,url){
+function sendMessage(message,number, url) {
     
+    console.log("Preparing to send message");
+
     var form = new FormData();
     form.append("Body", message);
     form.append("To", `whatsapp:${number}`);
     form.append("From", "whatsapp:+14155238886");
     
-    
-    if (url != "") {
+    console.log(url);
+
+    if (url != "" && url != undefined) {
         form.append("MediaUrl", url);
     }
 
@@ -82,7 +85,7 @@ function sendMessage(message,number,url){
         "method": "POST",
         "beforeSend": function (xhr) {
             /* Authorization header */
-           xhr.setRequestHeader("Authorization", "Basic " + btoa(ACCOUNT_SID + ":" + AUTH_TOKEN))
+            xhr.setRequestHeader("Authorization", "Basic " + btoa(ACCOUNT_SID + ":" + AUTH_TOKEN))
         },
         "processData": false,
         "contentType": false,
@@ -90,8 +93,8 @@ function sendMessage(message,number,url){
         "data": form
     };
 
-    $.ajax(settings).done(function (response) {
+    $.ajax(settings).done(function (response, status) {
         console.log(response);
-        
+        console.log(status);
     });
 }
