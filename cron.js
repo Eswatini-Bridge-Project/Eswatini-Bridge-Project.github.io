@@ -34,6 +34,7 @@ function createElements(){
 
         var message = item.fields.Message;
         var contacts = item.fields.Contacts;
+        var url = item.fields.Media;
         var date = item.fields.Date.toString().slice(0,10);
         var time = item.fields.Date.toString().slice(11,16);
 
@@ -44,7 +45,7 @@ function createElements(){
             var numbers = contacts.split(",");
             
             numbers.map( number => {
-                sendMessage(message,number);
+                sendMessage(message,number,url);
             })
             
            }
@@ -62,13 +63,17 @@ function getUsers(theUrl){
     
 }
     
-function sendMessage(message,number){
+function sendMessage(message,number,url){
     
     var form = new FormData();
     form.append("Body", message);
     form.append("To", `whatsapp:${number}`);
     form.append("From", "whatsapp:+14155238886");
-    /*form.append("MediaUrl", "https://images.unsplash.com/photo-1545093149-618ce3bcf49d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=668&q=80");*/
+    
+    
+    if (url != "") {
+        form.append("MediaUrl", url);
+    }
 
     var settings = {
         "async": true,
@@ -77,7 +82,7 @@ function sendMessage(message,number){
         "method": "POST",
         "beforeSend": function (xhr) {
             /* Authorization header */
-            xhr.setRequestHeader("Authorization", "Basic " + btoa("ACd39a50f2581980a42fa759d2a587253b" + ":" + "d957747df68438d2db18896dc8305901"))
+           xhr.setRequestHeader("Authorization", "Basic " + btoa(ACCOUNT_SID + ":" + AUTH_TOKEN))
         },
         "processData": false,
         "contentType": false,
